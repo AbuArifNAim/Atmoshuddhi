@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>এডমিন ড্যাশবোর্ড</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Noto Sans Bengali', 'Inter', sans-serif;
+    background: #f1f5f9;
+    color: #1e293b;
+  }
+  header {
+    background: linear-gradient(135deg, #1e40af, #3b82f6);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  }
+  header h1 { margin: 0; font-size: 1.3rem; font-weight: 700; }
+  header .btn-group { display: flex; gap: 10px; }
+  header button {
+    padding: 8px 18px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    color: white;
+  }
+  header button:hover { transform: translateY(-1px); }
+  .btn-excel { background: #f59e0b; }
+  .btn-excel:hover { box-shadow: 0 4px 12px rgba(245,158,11,0.4); }
+  .btn-logout { background: #ef4444; }
+  .btn-logout:hover { box-shadow: 0 4px 12px rgba(239,68,68,0.4); }
+
+  #loading {
+    text-align: center;
+    margin-top: 60px;
+    font-size: 1.2rem;
+    color: #64748b;
+  }
+
+  main {
+    max-width: 800px;
+    margin: 24px auto;
+    padding: 0 16px;
+  }
+  main h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0 0 16px;
+  }
+
+  .form-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .form-row select, .form-row input {
+    padding: 10px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: white;
+    outline: none;
+    transition: border 0.2s;
+    flex: 1;
+    min-width: 140px;
+  }
+  .form-row select:focus, .form-row input:focus { border-color: #3b82f6; }
+  .btn-save {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 12px;
+    background: #10b981;
+    color: white;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-size: 0.9rem;
+  }
+  .btn-save:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(16,185,129,0.3); }
+
+  .table-wrap {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    overflow: hidden;
+    margin-top: 16px;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: #f1f5f9;
+    color: #1e293b;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  td {
+    padding: 12px 16px;
+    text-align: center;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.95rem;
+  }
+  tfoot td {
+    font-weight: 700;
+    background: #fef3c7;
+    color: #92400e;
+    border-bottom: none;
+  }
+  td button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  td button:hover { opacity: 0.8; }
+
+  .btn-order {
+    margin-top: 12px;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 12px;
+    background: #f59e0b;
+    color: white;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-size: 0.9rem;
+  }
+  .btn-order:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(245,158,11,0.3); }
+
+  tr.dragging { opacity: 0.5; background: #fef3c7; }
+
+  .notice-card {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 24px;
+    border: 1px solid #e2e8f0;
+  }
+  .notice-card h3 { margin: 0 0 12px; font-size: 1rem; font-weight: 700; color: #1e293b; }
+  .notice-card .current-notice { font-size: 0.85rem; color: #64748b; margin: 8px 0 0; word-break: break-word; }
+
+  .kalam-form {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+  .kalam-form input, .kalam-form textarea {
+    padding: 10px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border 0.2s;
+    box-sizing: border-box;
+  }
+  .kalam-form input:focus, .kalam-form textarea:focus { border-color: #3b82f6; }
+  .kalam-form textarea { width: 100%; resize: vertical; min-height: 100px; }
+
+  .kalam-admin-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: white;
+    border-radius: 12px;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 8px;
+  }
+  .kalam-admin-item .num { font-weight: 700; color: var(--accent, #10b981); min-width: 30px; }
+  .kalam-admin-item .info { flex: 1; }
+  .kalam-admin-item .info h4 { margin: 0 0 4px; font-size: 0.95rem; }
+  .kalam-admin-item .info p { margin: 0; font-size: 0.8rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .kalam-admin-item .actions { display: flex; gap: 6px; }
+  .kalam-admin-item .actions button {
+    padding: 6px 12px; border: none; border-radius: 8px;
+    font-size: 0.8rem; cursor: pointer; font-family: inherit;
+    transition: all 0.2s;
+  }
+  .kalam-admin-item .actions .edit-btn { background: #3b82f6; color: white; }
+  .kalam-admin-item .actions .del-btn { background: #ef4444; color: white; }
+
+  @media (max-width: 640px) {
+    header { flex-direction: column; gap: 10px; text-align: center; }
+    .form-row { flex-direction: column; }
+    .form-row select, .form-row input { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <p class="site-subtitle" style="margin:0 0 4px;font-size:1.6rem;font-weight:700;color:#64748b;text-align:center;"></p>
+  <h1>এডমিন ড্যাশবোর্ড</h1>
+  <div class="btn-group">
+    <button class="btn-excel" id="excelfile" onclick="window.location.href='https://1drv.ms/f/c/920544377a6755f3/ElmgEem2iq1BpS8iaCmu2MABuZRphS_LzTgV5zJVrUOA4w'">এক্সেল ফাইল</button>
+    <button class="btn-logout" id="logoutBtn">লগআউট</button>
+  </div>
+</header>
+
+<div id="loading">⏳ লোড হচ্ছে...</div>
+
+<main style="display:none">
+  <h2>অবদান পরিচালনা করুন</h2>
+
+  <div class="notice-card">
+    <h3>📢 নোটিশ / মার্কি টেক্সট</h3>
+    <div class="form-row">
+      <input type="text" id="marqueeInput" placeholder="নতুন নোটিশ টেক্সট লিখুন..." style="flex:1">
+      <button class="btn-save" id="saveNoticeBtn">সেভ নোটিশ</button>
+    </div>
+    <div class="current-notice" id="currentNotice"></div>
+  </div>
+
+  <div class="form-row">
+    <select id="memberSelect">
+      <option value="">-- মেম্বার সিলেক্ট করুন --</option>
+    </select>
+    <input type="text" id="month" placeholder="মাস (যেমন: সেপ্টেম্বর'২৫)">
+    <input type="number" id="amount" placeholder="পরিমাণ">
+    <button class="btn-save" id="saveBtn">Save</button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>মাস</th><th>অবদান</th><th>Action</th></tr>
+      </thead>
+      <tbody id="contributionsBody"></tbody>
+      <tfoot>
+        <tr><td>মোট</td><td id="totalAmount">0</td><td></td></tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <button class="btn-order" id="saveOrderBtn">💾 Save Order</button>
+
+  <hr style="margin:32px 0;border:none;border-top:2px solid #e2e8f0;">
+
+  <h2 style="margin:0 0 16px;">কালাম পরিচালনা করুন</h2>
+
+  <div class="kalam-form">
+    <input type="text" id="kalamTitle" placeholder="শিরোনাম">
+    <input type="text" id="kalamWriter" placeholder="রচয়িতার নাম (ঐচ্ছিক)">
+    <textarea id="kalamContent" placeholder="কালাম টেক্সট..." rows="4"></textarea>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+      <button class="btn-save" id="saveKalamBtn" style="background:#10b981;">➕ নতুন কালাম</button>
+      <button class="btn-save" id="updateKalamBtn" style="display:none;background:#3b82f6;">আপডেট কালাম</button>
+      <button class="btn-save" id="cancelKalamBtn" style="display:none;background:#64748b;">বাতিল</button>
+    </div>
+  </div>
+
+  <div id="kalamListAdmin"></div>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, getDocs, addDoc, deleteDoc, collection, updateDoc, query, orderBy, arrayUnion, arrayRemove, limit } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC63JYlboedK6hE_u4ubAT0Nm2PIo-ygQk",
+  authDomain: "atmoshuddi.firebaseapp.com",
+  projectId: "atmoshuddi",
+  storageBucket: "atmoshuddi.firebasestorage.app", 
+  messagingSenderId: "540869594984",
+  appId: "1:540869594984:web:667a69b95b6edd983ed0dd",
+  measurementId: "G-X9HQ1DN4P7"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const memberSelect = document.getElementById("memberSelect");
+const tableBody = document.getElementById("contributionsBody");
+const totalAmountCell = document.getElementById("totalAmount");
+const mainEl = document.querySelector("main");
+const loadingEl = document.getElementById("loading");
+
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  signOut(auth).then(() => window.location.href = "index.html");
+});
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.href = "index.html"; return; }
+  const adminDoc = await getDoc(doc(db, "admins", user.uid));
+  if (!adminDoc.exists()) { window.location.href = "index.html"; return; }
+
+  const memberOptions = [
+    {name:"Nahidul Islam Shahin", uid:"TswpmH1sN7fRpF6Yk7eolo7Ugds2"},
+    {name:"Shohrah Uddin Sowrov", uid:"wQSvWHi2QOWsqg7VxhvQp8Bq8zw1"},
+    {name:"Zahedul Amin Sohag", uid:"FhS6Tb10XYeVjwv4rcfAEr7ZuV33"},
+    {name:"Ziabul", uid:"cHb9uvDq5hSAUuBVloG4NR3gPof1"},
+    {name:"Mojibul Alam", uid:"5VdlbmtFCYeMH6jyDYJgjqTn1uC2"},
+    {name:"Jahir Amor", uid:"q1Dc1OeL95NDyRg4eFFVyl5BqbX2"},
+    {name:"Abu Arif Naim", uid:"57Yysv0aWfhcNSC8awu1L1dzVTm2"},
+    {name:"Nahidul Islam Tipu", uid:"PaaeyQt3RfbrSI69NlKz9gilFy32"},
+    {name:"Mofiz Alam", uid:"b7F4IOjC7GNofRfx15Qd0JmUFTH3"},
+    {name:"Jalal Uddin Rumi", uid:"lmP4QmU0FXQwZbKHcVvydj97TQu1"},
+    {name:"Shaker Alam", uid:"ftIftWaxlBhu1hP0a4N9OqElqB73"},
+    {name:"Mahbubul Alam", uid:"4ILmO5KmbUb38cySJnOM4001cEy1"},
+    {name:"Nezam Uddin", uid:"bIHNGBaFHKaYd6TKlg4NwfUKcg13"}
+  ];
+  memberOptions.forEach(m => {
+    const opt = document.createElement("option");
+    opt.value = m.uid;
+    opt.textContent = m.name;
+    memberSelect.appendChild(opt);
+  });
+
+  loadingEl.style.display = "none";
+  mainEl.style.display = "block";
+
+  // Load current marquee notice
+  (async () => {
+    try {
+      const snap = await getDoc(doc(db, "settings", "homepage"));
+      if (snap.exists() && snap.data().marquee) {
+        document.getElementById("currentNotice").textContent = "বর্তমান: " + snap.data().marquee;
+        document.getElementById("marqueeInput").value = snap.data().marquee;
+      }
+    } catch (e) { console.error("Failed to load notice:", e); }
+  })();
+
+  // Load kalams into admin list
+  loadKalamsAdmin();
+});
+
+let selectedUID = null;
+let draggedRow = null;
+
+function makeRowsDraggable() {
+  const rows = tableBody.querySelectorAll("tr");
+  rows.forEach(row => {
+    row.setAttribute("draggable", true);
+    row.addEventListener("dragstart", () => { draggedRow = row; row.classList.add("dragging"); });
+    row.addEventListener("dragend", () => { draggedRow = null; row.classList.remove("dragging"); });
+    row.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      const bounding = row.getBoundingClientRect();
+      if (e.clientY - bounding.top > bounding.height / 2) {
+        row.style.borderBottom = "3px solid #3b82f6";
+        row.style.borderTop = "";
+      } else {
+        row.style.borderTop = "3px solid #3b82f6";
+        row.style.borderBottom = "";
+      }
+    });
+    row.addEventListener("dragleave", () => { row.style.borderBottom = ""; row.style.borderTop = ""; });
+    row.addEventListener("drop", (e) => {
+      e.preventDefault();
+      row.style.borderBottom = ""; row.style.borderTop = "";
+      if (draggedRow !== row) {
+        const bounding = row.getBoundingClientRect();
+        if (e.clientY - bounding.top > bounding.height / 2) row.after(draggedRow);
+        else row.before(draggedRow);
+      }
+    });
+  });
+}
+
+let currentContributions = [];
+
+memberSelect.addEventListener("change", async () => {
+  tableBody.innerHTML = "";
+  selectedUID = memberSelect.value;
+  if (!selectedUID) return;
+
+  const memberDoc = doc(db, "members", selectedUID);
+  const snap = await getDoc(memberDoc);
+  if (!snap.exists()) return;
+
+  currentContributions = (snap.data().contributions || []).map(item => {
+    if (!item.id) item.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    return item;
+  });
+  let total = 0;
+  currentContributions.forEach(item => total += item.amount);
+  totalAmountCell.textContent = total;
+
+  currentContributions.forEach(item => {
+    const tr = document.createElement("tr");
+    tr.dataset.id = item.id;
+    tr.innerHTML = `<td>${item.month}</td><td>${item.amount}</td><td></td>`;
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "Delete";
+    Object.assign(delBtn.style, { background: "#ef4444", color: "white", border: "none", borderRadius: "8px", cursor: "pointer" });
+    delBtn.addEventListener("click", async () => {
+      if (confirm("⚠ আপনি কি নিশ্চিত?")) {
+        await updateDoc(memberDoc, { contributions: arrayRemove(item) });
+        tr.remove();
+        totalAmountCell.textContent = parseInt(totalAmountCell.textContent) - item.amount;
+      }
+    });
+    tr.children[2].appendChild(delBtn);
+    tableBody.appendChild(tr);
+  });
+  makeRowsDraggable();
+});
+
+document.getElementById("saveBtn").addEventListener("click", async () => {
+  if (!selectedUID) return alert("⚠ মেম্বার সিলেক্ট করুন!");
+  const month = document.getElementById("month").value.trim();
+  const amount = parseInt(document.getElementById("amount").value.trim());
+  if (!month || !amount) return alert("⚠ সব ফিল্ড পূরণ করুন!");
+  const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  await updateDoc(doc(db, "members", selectedUID), { contributions: arrayUnion({ id, month, amount }) });
+  document.getElementById("month").value = "";
+  document.getElementById("amount").value = "";
+  memberSelect.dispatchEvent(new Event("change"));
+  alert("✅ নতুন ডাটা সেভ হয়েছে!");
+});
+
+document.getElementById("saveOrderBtn").addEventListener("click", async () => {
+  if (!selectedUID) return alert("⚠ মেম্বার সিলেক্ট করুন!");
+  if (!selectedUID) return alert("⚠ মেম্বার সিলেক্ট করুন!");
+  const rows = tableBody.querySelectorAll("tr");
+  const newOrder = [];
+  rows.forEach(r => {
+    newOrder.push({
+      id: r.dataset.id || Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      month: r.children[0].textContent,
+      amount: parseInt(r.children[1].textContent)
+    });
+  });
+  await updateDoc(doc(db, "members", selectedUID), { contributions: newOrder });
+  alert("✅ নতুন ক্রম সেভ হয়েছে!");
+});
+
+document.getElementById("saveNoticeBtn").addEventListener("click", async () => {
+  const text = document.getElementById("marqueeInput").value.trim();
+  if (!text) return alert("⚠ টেক্সট লিখুন!");
+  await setDoc(doc(db, "settings", "homepage"), { marquee: text }, { merge: true });
+  document.getElementById("currentNotice").textContent = "বর্তমান: " + text;
+  alert("✅ নোটিশ সেভ হয়েছে!");
+});
+
+// ---- Kalam CRUD ----
+let editingKalamId = null;
+
+async function loadKalamsAdmin() {
+  try {
+    const snap = await getDocs(query(collection(db, "kalam"), orderBy("number", "asc")));
+    const container = document.getElementById("kalamListAdmin");
+    container.innerHTML = "";
+    snap.forEach(docSnap => {
+      const k = docSnap.data();
+      const div = document.createElement("div");
+      div.className = "kalam-admin-item";
+      div.innerHTML = `
+        <div class="num">${k.number}</div>
+        <div class="info"><h4>${k.title}</h4><p>${k.writer ? k.writer + ' — ' : ''}${(k.content||"").slice(0,80)}</p></div>
+        <div class="actions">
+          <button class="edit-btn" data-id="${docSnap.id}">Edit</button>
+          <button class="del-btn" data-id="${docSnap.id}">Delete</button>
+        </div>`;
+      div.querySelector(".edit-btn").onclick = () => editKalam(docSnap.id, k);
+      div.querySelector(".del-btn").onclick = () => deleteKalam(docSnap.id);
+      container.appendChild(div);
+    });
+    } catch (e) { console.error("Failed to load kalams:", e); }
+}
+
+function editKalam(id, k) {
+  editingKalamId = id;
+  document.getElementById("kalamTitle").value = k.title;
+  document.getElementById("kalamWriter").value = k.writer || "";
+  document.getElementById("kalamContent").value = k.content;
+  document.getElementById("saveKalamBtn").style.display = "none";
+  document.getElementById("updateKalamBtn").style.display = "inline-block";
+  document.getElementById("cancelKalamBtn").style.display = "inline-block";
+}
+
+function cancelEdit() {
+  editingKalamId = null;
+  document.getElementById("kalamTitle").value = "";
+  document.getElementById("kalamWriter").value = "";
+  document.getElementById("kalamContent").value = "";
+  document.getElementById("saveKalamBtn").style.display = "inline-block";
+  document.getElementById("updateKalamBtn").style.display = "none";
+  document.getElementById("cancelKalamBtn").style.display = "none";
+}
+
+document.getElementById("saveKalamBtn").addEventListener("click", async () => {
+  const title = document.getElementById("kalamTitle").value.trim();
+  const writer = document.getElementById("kalamWriter").value.trim();
+  const content = document.getElementById("kalamContent").value.trim();
+  if (!title || !content) return alert("⚠ শিরোনাম এবং টেক্সট পূরণ করুন!");
+
+  const maxSnap = await getDocs(query(collection(db, "kalam"), orderBy("number", "desc"), limit(1)));
+  let maxNum = 0;
+  maxSnap.forEach(d => { maxNum = d.data().number; });
+
+  await addDoc(collection(db, "kalam"), { number: maxNum + 1, title, writer, content, createdAt: Date.now() });
+  document.getElementById("kalamTitle").value = "";
+  document.getElementById("kalamWriter").value = "";
+  document.getElementById("kalamContent").value = "";
+  await loadKalamsAdmin();
+  alert("✅ নতুন কালাম সেভ হয়েছে!");
+});
+
+document.getElementById("updateKalamBtn").addEventListener("click", async () => {
+  if (!editingKalamId) return;
+  const title = document.getElementById("kalamTitle").value.trim();
+  const writer = document.getElementById("kalamWriter").value.trim();
+  const content = document.getElementById("kalamContent").value.trim();
+  if (!title || !content) return alert("⚠ শিরোনাম এবং টেক্সট পূরণ করুন!");
+
+  await updateDoc(doc(db, "kalam", editingKalamId), { title, writer, content });
+  cancelEdit();
+  await loadKalamsAdmin();
+  alert("✅ কালাম আপডেট হয়েছে!");
+});
+
+document.getElementById("cancelKalamBtn").addEventListener("click", cancelEdit);
+
+async function deleteKalam(id) {
+  if (!confirm("⚠ আপনি কি নিশ্চিত? এই কালাম ডিলিট হবে!")) return;
+  await deleteDoc(doc(db, "kalam", id));
+  await loadKalamsAdmin();
+  alert("✅ কালাম ডিলিট হয়েছে!");
+}
+  </script>
+<script src="js/common.js"></script>
+</body>
+</html>

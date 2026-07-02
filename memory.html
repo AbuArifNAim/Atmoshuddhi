@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" sizes="180x180" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <title>আমাদের স্মৃতি</title>
+  <style>
+    :root {
+      --bg: #f0fdf4;
+      --card-bg: rgba(255,255,255,0.85);
+      --accent: #10b981;
+      --accent-dark: #059669;
+      --text: #1e293b;
+      --text-light: #64748b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Noto Sans Bengali', sans-serif;
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #ecfdf5 100%);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+    }
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 700px;
+      width: 100%;
+      padding: 4px 6px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 2px; }
+    .nav-links a {
+      color: var(--text-light);
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.25s ease;
+    }
+    .nav-links a:hover { background: rgba(16,185,129,0.1); color: var(--accent-dark); }
+    .nav-links a.active { background: rgba(16,185,129,0.15); color: var(--accent-dark); font-weight: 600; }
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 10px 14px;
+      border-radius: 10px;
+      color: var(--text);
+    }
+    .nav-toggle:hover { background: rgba(0,0,0,0.05); }
+
+    @media (max-width: 640px) {
+      .nav-toggle { display: block; }
+      .nav-links { display: none; flex-direction: column; width: 100%; padding: 4px 0 8px; }
+      .nav-links.show { display: flex; }
+      .navbar { flex-wrap: wrap; }
+      .site-subtitle { font-size: 1.1rem; }
+    }
+
+  .site-subtitle {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-light);
+    margin: 28px 0 4px;
+    text-align: center;
+  }
+
+  .page-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text);
+    margin: 0 0 8px;
+    text-align: center;
+  }
+
+    .page-sub {
+      color: var(--text-light);
+      margin: 0 0 24px;
+      font-size: 1rem;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .memory-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.5);
+      border-radius: 20px;
+      padding: 36px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    }
+    .memory-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 40px rgba(16,185,129,0.15);
+      border-color: var(--accent);
+      background: white;
+    }
+    .memory-card .icon {
+      font-size: 2.8rem;
+      margin-bottom: 12px;
+    }
+    .memory-card .label {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-box {
+      background: white;
+      padding: 32px 28px 28px;
+      border-radius: 20px;
+      width: 340px;
+      max-width: 90vw;
+      text-align: center;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.15);
+      animation: modalIn 0.25s ease;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-box h3 { margin: 0 0 20px; color: var(--text); font-size: 1.2rem; font-weight: 700; }
+    .modal-box input {
+      width: 100%; padding: 12px 14px; margin: 8px 0;
+      border: 1px solid #e2e8f0; border-radius: 12px;
+      font-size: 0.95rem; font-family: inherit; outline: none;
+      box-sizing: border-box; transition: border 0.2s;
+    }
+    .modal-box input:focus { border-color: var(--accent); }
+    .modal-box .btn-primary {
+      width: 100%; padding: 12px; margin-top: 12px;
+      border: none; border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+      color: white; font-size: 1rem; font-weight: 600; font-family: inherit;
+      cursor: pointer; transition: all 0.25s ease;
+    }
+    .modal-box .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 20px rgba(16,185,129,0.3); }
+    .modal-box .btn-cancel {
+      width: 100%; padding: 12px; margin-top: 8px;
+      border: none; border-radius: 12px;
+      background: #ef4444; color: white; font-size: 1rem; font-weight: 600; font-family: inherit;
+      cursor: pointer; transition: all 0.25s ease;
+    }
+    .modal-box .btn-cancel:hover { background: #dc2626; }
+  </style>
+</head>
+<body>
+  <p class="site-subtitle" style="text-align:center;font-size:1.4rem;font-weight:700;color:var(--text-light);margin:16px 16px 0;"></p>
+  <nav class="navbar">
+    <button class="nav-toggle" onclick="toggleMenu()">☰</button>
+    <div class="nav-links" id="menu">
+      <a href="index.html">হোম</a>
+      <a href="member.html">সদস্যবৃন্দ</a>
+      <a href="memory.html" class="active">আমাদের স্মৃতি</a>
+      <a href="kalam.html">মাইজভাণ্ডারী কালাম</a>
+      <a href="about.html">আত্মশুদ্ধি সম্পর্কে</a>
+    </div>
+  </nav>
+
+  <h2 class="page-title">আমাদের স্মৃতি</h2>
+  <p class="page-sub">আমাদের কিছু স্মৃতি এখানে তুলে ধরা হলো।</p>
+
+  <div class="card-grid">
+    <div class="memory-card" onclick="openLogin('https://drive.google.com/drive/folders/1kId6RopYdZjk3sRiCNCvcetn3QKmjcVy')">
+      <div class="icon">🎬</div>
+      <div class="label">ভিডিও</div>
+    </div>
+    <div class="memory-card" onclick="openLogin('https://drive.google.com/drive/folders/1ZfvZ0rj_AJrDzjJsrSPGNIGkAqSsegQy?usp=drive_link')">
+      <div class="icon">🖼️</div>
+      <div class="label">ছবি</div>
+    </div>
+  </div>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-box">
+      <h3>Login Required</h3>
+      <input type="text" id="username" placeholder="Email"><br>
+      <input type="password" id="password" placeholder="Password"><br>
+      <button class="btn-primary" onclick="checkLogin()">Login</button>
+      <button class="btn-cancel" onclick="closeLogin()">Cancel</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC63JYlboedK6hE_u4ubAT0Nm2PIo-ygQk",
+      authDomain: "atmoshuddi.firebaseapp.com",
+      projectId: "atmoshuddi",
+      storageBucket: "atmoshuddi.firebasestorage.app",
+      messagingSenderId: "540869594984",
+      appId: "1:540869594984:web:667a69b95b6edd983ed0dd",
+      measurementId: "G-X9HQ1DN4P7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let targetPage = "";
+
+    window.toggleMenu = function () {
+      document.getElementById("menu").classList.toggle("show");
+    }
+
+    function openLogin(page) {
+      targetPage = page;
+      document.getElementById("loginModal").style.display = "flex";
+    }
+    window.openLogin = openLogin;
+
+    function closeLogin() {
+      document.getElementById("loginModal").style.display = "none";
+    }
+    window.closeLogin = closeLogin;
+
+    async function checkLogin() {
+      const email = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        const memDoc = await getDoc(doc(db, "access", cred.user.uid));
+        if (memDoc.exists() && memDoc.data().role === "memory") {
+          window.location.href = targetPage;
+        } else {
+          alert("❌ আপনার এই সুবিধা নেই!");
+          await signOut(auth);
+        }
+      } catch (e) {
+        alert("❌ ভুল ইমেইল বা পাসওয়ার্ড!");
+        console.error("Memory login error:", e);
+      }
+    }
+    window.checkLogin = checkLogin;
+  </script>
+<script src="js/common.js"></script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>আত্মশুদ্ধি সম্পর্কে</title>
+  <link rel="icon" sizes="180x180" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f0fdf4;
+      --card-bg: rgba(255,255,255,0.85);
+      --accent: #10b981;
+      --accent-dark: #059669;
+      --text: #1e293b;
+      --text-light: #64748b;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Noto Sans Bengali', sans-serif;
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #ecfdf5 100%);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+    }
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 700px;
+      width: 100%;
+      padding: 4px 6px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(0,0,0,0.06);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    }
+    .nav-links { display: flex; flex-wrap: wrap; gap: 2px; }
+    .nav-links a {
+      color: var(--text-light);
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.25s ease;
+    }
+    .nav-links a:hover { background: rgba(16,185,129,0.1); color: var(--accent-dark); }
+    .nav-links a.active { background: rgba(16,185,129,0.15); color: var(--accent-dark); font-weight: 600; }
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      padding: 10px 14px;
+      border-radius: 10px;
+      color: var(--text);
+    }
+    .nav-toggle:hover { background: rgba(0,0,0,0.05); }
+
+    @media (max-width: 640px) {
+      .nav-toggle { display: block; }
+      .nav-links { display: none; flex-direction: column; width: 100%; padding: 4px 0 8px; }
+      .nav-links.show { display: flex; }
+      .navbar { flex-wrap: wrap; }
+    }
+
+    .card {
+      max-width: 700px;
+      width: 100%;
+      margin-top: 32px;
+      padding: 48px 40px;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.6);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.06);
+      text-align: center;
+      line-height: 1.9;
+      animation: fadeUp 0.6s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card h2 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: #dc2626;
+      margin: 0 0 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .site-subtitle {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #64748b;
+      margin: 0 0 4px;
+    }
+
+    .separator {
+      width: 50px;
+      height: 4px;
+      background: linear-gradient(90deg, #dc2626, #f97316);
+      border-radius: 4px;
+      margin: 0 auto 28px;
+    }
+
+    .card .intro {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #92400e;
+      margin-bottom: 20px;
+    }
+
+    .card .body-text {
+      font-size: 1rem;
+      color: var(--text-light);
+      line-height: 2;
+    }
+
+    .card .body-text span {
+      display: block;
+      padding: 4px 0;
+    }
+
+    @media (max-width: 640px) {
+      .card { padding: 32px 20px; margin-top: 20px; }
+      .card h2 { font-size: 1.8rem; }
+      .card .intro { font-size: 1rem; }
+      .site-subtitle { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+  <p class="site-subtitle" style="text-align:center;font-size:1.4rem;font-weight:700;color:#64748b;margin:16px 16px 0;"></p>
+  <nav class="navbar">
+    <button class="nav-toggle" onclick="toggleMenu()">☰</button>
+    <div class="nav-links" id="menu">
+      <a href="index.html">হোম</a>
+      <a href="member.html">সদস্যবৃন্দ</a>
+      <a href="memory.html">আমাদের স্মৃতি</a>
+      <a href="kalam.html">মাইজভাণ্ডারী কালাম</a>
+      <a href="about.html" class="active">আত্মশুদ্ধি সম্পর্কে</a>
+    </div>
+  </nav>
+
+  <div class="card">
+    <h2>'আত্মশুদ্ধি' সম্পর্কে</h2>
+    <div class="separator"></div>
+    <div class="intro">
+      আত্মশুদ্ধি পরিবার — এক আধ্যাত্মিক বন্ধনে গড়া আমাদের পারিবারিক গর্ব।<br>
+      হযরত আকবর শাহ (রহ.)'র দয়ার ছায়ায় গড়ে ওঠা এই পরিবার টিকে ছিল, আছে, ইনশাআল্লাহ থাকবে চিরকাল।
+    </div>
+    <div class="body-text">
+      <span>এটি কেবল একটি পরিবার নয়, একটি আধ্যাত্মিক উত্তরাধিকার।</span>
+      <span>যেখানে পরম শান্তি, ভ্রাতৃত্ব ও আত্মিক উন্নয়নই মুখ্য উদ্দেশ্য।</span>
+      <span>আমরা এখানে মিলিত হই আল্লাহর সন্তুষ্টি অর্জনের আশায়।</span>
+      <span>এই পরিবারে রয়েছে দোয়া, ভালবাসা ও বন্ধনের মধুরতার চর্চা।</span>
+      <span>হযরত আকবর শাহ (রহ.)'র আলোয় আলোকিত পথই আমাদের পথ।</span>
+      <span>আল্লাহর রহমত ও গাউছুল আজম মাইজভাণ্ডারীর কদমে আমাদের পথ চলা নিরন্তর।</span>
+      <span>রাসূল(সা) আমাদের আদর্শ, আত্মশুদ্ধিই আমাদের মুলমন্ত্র।</span>
+      <span>পরিবারের প্রতিটি সদস্যই যেন হয় একজন আলোকিত মানুষ।</span>
+    </div>
+  </div>
+
+  <script>
+    window.toggleMenu = function () {
+      document.getElementById("menu").classList.toggle("show");
+    }
+  </script>
+<script src="js/common.js"></script>
+</body>
+</html>

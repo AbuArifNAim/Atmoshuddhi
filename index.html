@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" sizes="180x180" type="image/png" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>আত্মশুদ্ধি</title>
+  <style>
+    :root {
+      --bg-primary: #0a0e1a;
+      --bg-secondary: #111827;
+      --accent-1: #f59e0b;
+      --accent-2: #10b981;
+      --accent-3: #8b5cf6;
+      --text-primary: #ffffff;
+      --text-secondary: #e2e8f0;
+      --glass-bg: rgba(255,255,255,0.06);
+      --glass-border: rgba(255,255,255,0.1);
+      --glass-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(-45deg, #0a1f0a, #0d2818, #143a1a, #0a1f0a, #0d2818);
+      background-size: 400% 400%;
+      animation: gradientShift 18s ease infinite;
+      font-family: 'Noto Sans Bengali', 'Inter', sans-serif;
+      color: var(--text-primary);
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Particle stars canvas */
+    #particleCanvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Animated gradient orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .orb-1 {
+      width: 400px; height: 400px;
+      background: var(--accent-3);
+      top: -100px; right: -100px;
+      animation: orbFloat 12s ease-in-out infinite alternate;
+    }
+    .orb-2 {
+      width: 300px; height: 300px;
+      background: var(--accent-1);
+      bottom: -50px; left: -80px;
+      animation: orbFloat 15s ease-in-out infinite alternate-reverse;
+    }
+    .orb-3 {
+      width: 350px; height: 350px;
+      background: var(--accent-2);
+      bottom: 30%; right: -120px;
+      animation: orbFloat 18s ease-in-out infinite alternate;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes orbFloat {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(60px, -40px) scale(1.2); }
+    }
+
+    /* Glassmorphic date bar */
+    .date-bar {
+      position: sticky;
+      top: 12px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 10px 24px;
+      margin: 12px 16px 0;
+      max-width: 900px;
+      width: calc(100% - 32px);
+      border-radius: 16px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      font-size: 0.85rem;
+    }
+    .date-section {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-secondary);
+    }
+    .date-section span {
+      color: var(--text-primary);
+    }
+    .date-section .sep { color: var(--text-secondary); opacity: 0.5; }
+
+    #loginBtn {
+      background: linear-gradient(135deg, var(--accent-3), #6d28d9);
+      color: white;
+      border: none;
+      padding: 7px 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+    #loginBtn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(139,92,246,0.4);
+    }
+
+    /* Hero Section */
+    .hero {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 40px 20px 30px;
+      max-width: 700px;
+      width: 100%;
+    }
+
+    .hero h1 {
+      font-size: 4.5rem;
+      font-weight: 800;
+      margin: 0 0 32px;
+      background: linear-gradient(135deg, var(--accent-1), #f97316);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+    }
+
+    .marquee-wrap {
+      width: 100%;
+      overflow: hidden;
+      padding: 12px 0;
+      position: relative;
+    }
+    .marquee-wrap::before,
+    .marquee-wrap::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0; width: 60px;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .marquee-wrap::before {
+      left: 0;
+      background: linear-gradient(to right, #0f0f1f, transparent);
+    }
+    .marquee-wrap::after {
+      right: 0;
+      background: linear-gradient(to left, #0f0f1f, transparent);
+    }
+    .marquee-inner {
+      display: flex;
+      gap: 48px;
+      animation: marqueeScroll 20s linear infinite;
+      width: max-content;
+    }
+    .marquee-inner span {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      letter-spacing: 1px;
+    }
+    .marquee-inner span em {
+      font-style: normal;
+      color: var(--accent-1);
+    }
+    @keyframes marqueeScroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* Glass navbar */
+    .navbar {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 700px;
+      width: calc(100% - 32px);
+      margin: 8px auto 0;
+      padding: 4px 6px;
+      border-radius: 16px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+    }
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px;
+    }
+    .nav-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: all 0.25s ease;
+    }
+    .nav-links a:hover {
+      background: rgba(255,255,255,0.08);
+      color: var(--text-primary);
+    }
+    .nav-links a.active {
+      background: rgba(245,158,11,0.15);
+      color: var(--accent-1);
+    }
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 10px 14px;
+      border-radius: 10px;
+      transition: background 0.2s;
+    }
+    .nav-toggle:hover { background: rgba(255,255,255,0.06); }
+
+    @media (max-width: 640px) {
+      .nav-toggle { display: block; }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        padding: 4px 0 8px;
+      }
+      .nav-links.show { display: flex; }
+      .navbar { flex-wrap: wrap; }
+      .hero-sub { font-size: 1.3rem; }
+      .hero h1 { font-size: 2.4rem; }
+      .date-bar { font-size: 0.75rem; padding: 8px 14px; gap: 4px; }
+      .date-section { justify-content: center; }
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: rgba(17,24,39,0.95);
+      backdrop-filter: blur(20px);
+      padding: 32px 28px 28px;
+      border-radius: 20px;
+      width: 340px;
+      max-width: 90vw;
+      text-align: center;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+      animation: modalIn 0.25s ease;
+    }
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(0.95) translateY(10px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-content h2 {
+      margin: 0 0 20px;
+      color: var(--text-primary);
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+    .modal-content input {
+      width: 100%;
+      padding: 12px 14px;
+      margin: 8px 0;
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: border 0.2s;
+      box-sizing: border-box;
+    }
+    .modal-content input:focus {
+      border-color: var(--accent-3);
+    }
+    .modal-content input::placeholder { color: var(--text-secondary); }
+    .modal-content button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent-2), #059669);
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .modal-content button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(16,185,129,0.3);
+    }
+    .modal .close {
+      float: right;
+      cursor: pointer;
+      color: var(--text-secondary);
+      font-size: 1.4rem;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    .modal .close:hover { color: #ef4444; }
+    #loginMsg { font-size: 0.85rem; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <p class="site-subtitle" style="position:relative;z-index:1;text-align:center;font-size:1.4rem;font-weight:700;color:var(--text-secondary);margin:16px 16px 0;"></p>
+
+  <!-- Date Bar -->
+  <div class="date-bar">
+    <div class="date-section">
+      <span id="bangla-date"></span>
+      <span class="sep">|</span>
+      <span id="english-date"></span>
+      <span class="sep">|</span>
+      <span id="hijri-bn"></span>
+      <span class="sep">|</span>
+      <span id="weekday"></span>
+    </div>
+    <button id="loginBtn" onclick="openLogin()">Admin Login</button>
+  </div>
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>আত্মশুদ্ধি</h1>
+    <div class="marquee-wrap">
+      <div class="marquee-inner">
+        <span>✦ <em>আত্মশুদ্ধি</em> পরিবারের ওয়েবসাইটে আপনাকে স্বাগতম ✦</span>
+        <span>✦ <em>আত্মশুদ্ধি</em> পরিবারের ওয়েবসাইটে আপনাকে স্বাগতম ✦</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <button class="nav-toggle" id="menuBtn" onclick="toggleMenu()">☰</button>
+    <div class="nav-links" id="menu">
+      <a href="index.html" class="active">হোম</a>
+      <a href="member.html">সদস্যবৃন্দ</a>
+      <a href="memory.html">আমাদের স্মৃতি</a>
+      <a href="kalam.html">মাইজভাণ্ডারী কালাম</a>
+      <a href="about.html">আত্মশুদ্ধি সম্পর্কে</a>
+    </div>
+  </nav>
+
+  <!-- Admin Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeLogin()">&times;</span>
+      <h2>এডমিন লগইন</h2>
+      <input type="email" id="email" placeholder="Email">
+      <input type="password" id="password" placeholder="Password">
+      <button onclick="login()">Login</button>
+      <p id="loginMsg" style="color:#ef4444; font-size:0.85rem; margin-top:12px;"></p>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-analytics.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC63JYlboedK6hE_u4ubAT0Nm2PIo-ygQk",
+      authDomain: "atmoshuddi.firebaseapp.com",
+      projectId: "atmoshuddi",
+      storageBucket: "atmoshuddi.firebasestorage.app", 
+      messagingSenderId: "540869594984",
+      appId: "1:540869594984:web:667a69b95b6edd983ed0dd",
+      measurementId: "G-X9HQ1DN4P7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Load marquee notice from Firestore (public read)
+    (async () => {
+      try {
+        const snap = await getDoc(doc(db, "settings", "homepage"));
+        if (snap.exists() && snap.data().marquee) {
+          const text = snap.data().marquee;
+          document.querySelectorAll(".marquee-inner span").forEach(el => {
+            el.innerHTML = `✦ <em>আত্মশুদ্ধি</em> পরিবার — ${text} ✦`;
+          });
+        }
+        } catch (e) { console.error("Marquee load error:", e); }
+    })();
+
+    window.toggleMenu = function () {
+      document.getElementById("menu").classList.toggle("show");
+    }
+
+    window.openLogin = function () { document.getElementById("loginModal").style.display = "flex"; }
+    window.closeLogin = function () { document.getElementById("loginModal").style.display = "none"; }
+
+    window.login = async function () {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const msg = document.getElementById("loginMsg");
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        const adminDoc = await getDoc(doc(db, "admins", user.uid));
+        if (adminDoc.exists()) {
+          msg.style.color = "#10b981";
+          msg.textContent = "✅ লগইন সফল!";
+          setTimeout(() => { window.location.href = "admin-dashboard.html"; }, 1000);
+        } else {
+          await signOut(auth);
+          msg.textContent = "❌ আপনি এডমিন নন!";
+        }
+      } catch (error) {
+        msg.textContent = "❌ " + error.message;
+      }
+    }
+  </script>
+
+  <!-- Date & Time Script -->
+  <script>
+  (function(){
+    const TZ = 'Asia/Dhaka';
+    const bnMonths = ['বৈশাখ','জ্যৈষ্ঠ','আষাঢ়','শ্রাবণ','ভাদ্র','আশ্বিন','কার্তিক','অগ্রহায়ণ','পৌষ','মাঘ','ফাল্গুন','চৈত্র'];
+    const oneDay = 24 * 60 * 60 * 1000;
+    const DEBUG = false;
+
+    function toBanglaDigits(s){
+      return String(s).replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+    }
+
+    function dhakaLocalDate(){
+      const now = new Date();
+      try {
+        const parts = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year:'numeric', month:'2-digit', day:'2-digit' }).formatToParts(now);
+        const y = +parts.find(p => p.type === 'year').value;
+        const m = +parts.find(p => p.type === 'month').value - 1;
+        const d = +parts.find(p => p.type === 'day').value;
+        return { y, m, d, jsDate: new Date(y, m, d) };
+      } catch (e) {
+        const s = now.toLocaleString('en-CA', { timeZone: TZ });
+        const [ymd] = s.split(',');
+        const [yy, mm, dd] = ymd.trim().split('-').map(Number);
+        return { y: yy, m: mm - 1, d: dd, jsDate: new Date(yy, mm-1, dd) };
+      }
+    }
+
+    function isLeapYear(y){ return (y % 4 === 0 && (y % 100 !== 0 || y % 400 === 0)); }
+
+    function computeBanglaDateObject(dhakaDate){
+      const year = dhakaDate.getFullYear();
+      const month = dhakaDate.getMonth();
+      const date = dhakaDate.getDate();
+      let startGreg = year;
+      if (month < 3 || (month === 3 && date < 14)) startGreg--;
+      const nowUTCmid = Date.UTC(dhakaDate.getFullYear(), dhakaDate.getMonth(), dhakaDate.getDate());
+      let startUTCmid = Date.UTC(startGreg, 3, 14);
+      let diffDays = Math.floor((nowUTCmid - startUTCmid) / oneDay);
+      if (diffDays < 0) {
+        startGreg = startGreg - 1;
+        startUTCmid = Date.UTC(startGreg, 3, 14);
+        diffDays = Math.floor((nowUTCmid - startUTCmid) / oneDay);
+      }
+      const falgunLen = isLeapYear(startGreg + 1) ? 30 : 29;
+      const monthLens = [31,31,31,31,31,31,30,30,30,30,falgunLen,30];
+      const yearLen = monthLens.reduce((a,b)=>a+b,0);
+      let rem = diffDays % yearLen;
+      if (rem < 0) rem += yearLen;
+      let m = 0;
+      while (m < 12 && rem >= monthLens[m]) { rem -= monthLens[m]; m++; }
+      if (m >= 12) m = 11;
+      const bDay = rem + 1;
+      const bMonth = bnMonths[m];
+      const bYear = startGreg - 593;
+      return { pretty: `${toBanglaDigits(bDay)} ${bMonth} ${toBanglaDigits(bYear)}` };
+    }
+
+    function arabicHijriToBanglaStr(dhakaDate){
+      let hijri;
+      try {
+        hijri = new Intl.DateTimeFormat("ar-TN-u-ca-islamic-umalqura", { day:"numeric", month:"long", year:"numeric" }).format(dhakaDate);
+      } catch(e) {
+        hijri = new Intl.DateTimeFormat("ar-SA-u-ca-islamic", { day:"numeric", month:"long", year:"numeric" }).format(dhakaDate);
+      }
+      const numMap = {"0":"০","1":"১","2":"২","3":"৩","4":"৪","5":"৫","6":"৬","7":"৭","8":"৮","9":"৯","٠":"০","١":"১","٢":"২","٣":"৩","٤":"৪","٥":"৫","٦":"৬","٧":"৭","٨":"৮","٩":"৯","۰":"০","۱":"১","۲":"২","۳":"۳","۴":"৪","۵":"৫","۶":"৬","۷":"৭","۸":"৮","۹":"৯"};
+      hijri = hijri.replace(/[0-9٠-٩۰-۹]/g, d => numMap[d]);
+      const monthMap = {"محرم":"মুহররম","صفر":"সফর","ربيع الأول":"রবিউল আউয়াল","ربيع الآخر":"রবিউস সানি","جمادى الأولى":"জমাদিউল আউয়াল","جمادى الآخرة":"জমাদিউস সানি","رجب":"রজব","شعبان":"শাবান","رمضان":"রমজান","شوال":"শাওয়াল","ذو القعدة":"জিলকদ","ذو الحجة":"জিলহজ"};
+      for (const ar in monthMap) hijri = hijri.replace(ar, monthMap[ar]);
+      return hijri;
+    }
+
+    function updateAll(){
+      const parts = dhakaLocalDate();
+      const dhakaDate = parts.jsDate;
+      document.getElementById('bangla-date') && (document.getElementById('bangla-date').innerHTML = computeBanglaDateObject(dhakaDate).pretty);
+      document.getElementById('english-date') && (document.getElementById('english-date').textContent = dhakaDate.toLocaleDateString('en-GB', { year:'numeric', month:'long', day:'numeric' }));
+      document.getElementById('hijri-bn') && (document.getElementById('hijri-bn').textContent = arabicHijriToBanglaStr(dhakaDate));
+      document.getElementById('weekday') && (document.getElementById('weekday').textContent = dhakaDate.toLocaleDateString('bn-BD', { weekday:'long' }));
+    }
+
+    updateAll();
+  })();
+  </script>
+
+<script src="js/common.js"></script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>মাইজভাণ্ডারী কালাম - আত্মশুদ্ধি</title>
+<link rel="icon" href="favicon.png" sizes="180x180">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0fdf4;
+    --card-bg: rgba(255,255,255,0.85);
+    --accent: #10b981;
+    --accent-dark: #059669;
+    --text: #1e293b;
+    --text-light: #64748b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Noto Sans Bengali', sans-serif;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #ecfdf5 100%);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px;
+  }
+
+  .navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 700px;
+    width: 100%;
+    padding: 4px 6px;
+    border-radius: 16px;
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+  .nav-links { display: flex; flex-wrap: wrap; gap: 2px; }
+  .nav-links a {
+    color: var(--text-light);
+    text-decoration: none;
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.25s ease;
+  }
+  .nav-links a:hover { background: rgba(16,185,129,0.1); color: var(--accent-dark); }
+  .nav-links a.active { background: rgba(16,185,129,0.15); color: var(--accent-dark); font-weight: 600; }
+  .nav-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px 14px;
+    border-radius: 10px;
+    color: var(--text);
+  }
+  .nav-toggle:hover { background: rgba(0,0,0,0.05); }
+
+  @media (max-width: 640px) {
+    .nav-toggle { display: block; }
+    .nav-links { display: none; flex-direction: column; width: 100%; padding: 4px 0 8px; }
+    .nav-links.show { display: flex; }
+    .navbar { flex-wrap: wrap; }
+  }
+
+  .site-subtitle {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-light);
+    margin: 28px 0 4px;
+    text-align: center;
+  }
+
+  .page-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text);
+    margin: 0 0 4px;
+    text-align: center;
+  }
+
+  .search-bar {
+    display: flex;
+    gap: 8px;
+    max-width: 500px;
+    width: 100%;
+    margin: 16px 0;
+  }
+  .search-bar input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+    transition: border 0.2s;
+  }
+  .search-bar input:focus { border-color: var(--accent); }
+  .search-bar button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 12px;
+    background: var(--accent);
+    color: white;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .search-bar button:hover { background: var(--accent-dark); }
+
+  .kalam-list {
+    max-width: 700px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 40px;
+  }
+
+  .kalam-item {
+    background: var(--card-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.5);
+    border-radius: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    text-decoration: none;
+    color: inherit;
+  }
+  .kalam-item:hover {
+    box-shadow: 0 6px 20px rgba(16,185,129,0.12);
+    transform: translateY(-2px);
+  }
+  .kalam-item .num-badge {
+    background: var(--accent);
+    color: white;
+    font-weight: 700;
+    font-size: 0.8rem;
+    padding: 2px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    min-width: 30px;
+    text-align: center;
+  }
+  .kalam-item h3 {
+    margin: 0;
+    flex: 1;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .kalam-item .arrow {
+    font-size: 0.9rem;
+    color: var(--text-light);
+  }
+
+  @media (max-width: 640px) {
+    .page-title { font-size: 1.5rem; }
+    .site-subtitle { font-size: 1.1rem; }
+    .search-bar { flex-direction: column; }
+    .kalam-item { padding: 12px 14px; }
+    .kalam-item h3 { font-size: 0.9rem; }
+  }
+</style>
+</head>
+<body>
+  <p class="site-subtitle" style="text-align:center;font-size:1.4rem;font-weight:700;color:var(--text-light);margin:16px 16px 0;"></p>
+  <nav class="navbar">
+    <button class="nav-toggle" onclick="toggleMenu()">☰</button>
+    <div class="nav-links" id="menu">
+      <a href="index.html">হোম</a>
+      <a href="member.html">সদস্যবৃন্দ</a>
+      <a href="memory.html">আমাদের স্মৃতি</a>
+      <a href="kalam.html" class="active">মাইজভাণ্ডারী কালাম</a>
+      <a href="about.html">আত্মশুদ্ধি সম্পর্কে</a>
+    </div>
+  </nav>
+
+  <h2 class="page-title">মাইজভাণ্ডারী কালাম</h2>
+
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="সার্চ করুন..." oninput="filterKalam()">
+    <button onclick="filterKalam()">🔍 সার্চ</button>
+  </div>
+
+  <div id="loading" style="color:var(--text-light);margin-top:20px;">⏳ লোড হচ্ছে...</div>
+  <div class="kalam-list" id="kalamList" style="display:none"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC63JYlboedK6hE_u4ubAT0Nm2PIo-ygQk",
+      authDomain: "atmoshuddi.firebaseapp.com",
+      projectId: "atmoshuddi",
+      storageBucket: "atmoshuddi.firebasestorage.app",
+      messagingSenderId: "540869594984",
+      appId: "1:540869594984:web:667a69b95b6edd983ed0dd",
+      measurementId: "G-X9HQ1DN4P7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    let allKalams = [];
+
+    window.toggleMenu = function () {
+      document.getElementById("menu").classList.toggle("show");
+    }
+
+    async function loadKalams() {
+      try {
+        const snap = await getDocs(query(collection(db, "kalam"), orderBy("number", "asc")));
+        allKalams = [];
+        snap.forEach(docSnap => allKalams.push({ id: docSnap.id, ...docSnap.data() }));
+        document.getElementById("loading").style.display = "none";
+        renderKalams(allKalams);
+      } catch (e) {
+        document.getElementById("loading").textContent = "❌ লোড করতে সমস্যা হয়েছে!";
+      }
+    }
+
+    function renderKalams(list) {
+      const container = document.getElementById("kalamList");
+      container.style.display = list.length ? "block" : "none";
+      if (list.length) {
+        container.innerHTML = list.map(k => `
+          <a class="kalam-item" href="kalam-view.html?id=${k.id}">
+            <span class="num-badge">${toBanglaNum(k.number)}</span>
+            <h3>${k.title}${k.writer ? ' — <span style="font-weight:400;font-size:0.85rem;color:var(--text-light)">'+k.writer+'</span>' : ''}</h3>
+            <span class="arrow">→</span>
+          </a>
+        `).join("");
+      } else {
+        container.innerHTML = '<p style="text-align:center;color:var(--text-light);margin-top:40px;">❌ কোনো কালাম পাওয়া যায়নি</p>';
+      }
+    }
+
+    window.filterKalam = function () {
+      const q = document.getElementById("searchInput").value.toLowerCase();
+      const filtered = allKalams.filter(k =>
+        k.title.toLowerCase().includes(q) || k.content.toLowerCase().includes(q) || (k.writer || "").toLowerCase().includes(q)
+      );
+      renderKalams(filtered);
+    }
+
+    function toBanglaNum(n) {
+      return String(n).replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+    }
+
+    loadKalams();
+  </script>
+<script src="js/common.js"></script>
+</body>
+</html>

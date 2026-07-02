@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>সদস্য ড্যাশবোর্ড</title>
+<link rel="icon" href="../favicon.png" sizes="180x180">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'Noto Sans Bengali', 'Inter', sans-serif;
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 50%, #ecfdf5 100%);
+    padding: 20px;
+  }
+  .dashboard {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1e293b;
+    margin: 0 0 4px;
+  }
+  #memberName {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #10b981;
+    margin-bottom: 20px;
+  }
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn-pdf { background: #10b981; color: white; }
+  .btn-pdf:hover { box-shadow: 0 4px 16px rgba(16,185,129,0.3); }
+  .btn-excel { background: #f59e0b; color: white; }
+  .btn-excel:hover { box-shadow: 0 4px 16px rgba(245,158,11,0.3); }
+  .btn-danger { background: #ef4444; color: white; }
+  .btn-danger:hover { box-shadow: 0 4px 16px rgba(239,68,68,0.3); }
+
+  .table-wrap {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    overflow: hidden;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th {
+    background: #f1f5f9;
+    color: #1e293b;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 14px 16px;
+    text-align: center;
+  }
+  td {
+    padding: 12px 16px;
+    text-align: center;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.95rem;
+  }
+  tr:last-child td { border-bottom: none; }
+  .total-row td {
+    font-weight: 700;
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  @media (max-width: 640px) {
+    h1 { font-size: 1.5rem; }
+    .toolbar { justify-content: center; }
+  }
+</style>
+</head>
+<body>
+<div class="dashboard">
+  <p class="site-subtitle" style="margin:0 0 4px;font-size:1.6rem;font-weight:700;color:#64748b;text-align:center;"></p>
+  <h1>সদস্য ড্যাশবোর্ড</h1>
+  <div id="memberName"></div>
+
+  <div class="toolbar">
+    <button class="btn btn-pdf" id="pdfBtn">PDF ডাউনলোড</button>
+    <button class="btn btn-excel" id="excelfile" onclick="window.location.href='https://1drv.ms/f/c/920544377a6755f3/ElmgEem2iq1BpS8iaCmu2MABuZRphS_LzTgV5zJVrUOA4w'">এক্সেল ফাইল</button>
+    <button class="btn btn-danger" id="logoutBtn">লগআউট</button>
+  </div>
+
+  <div id="pdfContent">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>মাস / ইভেন্ট</th><th>পরিমাণ</th></tr>
+        </thead>
+        <tbody id="contributionsBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC63JYlboedK6hE_u4ubAT0Nm2PIo-ygQk",
+  authDomain: "atmoshuddi.firebaseapp.com",
+  projectId: "atmoshuddi",
+  storageBucket: "atmoshuddi.firebasestorage.app",
+  messagingSenderId: "540869594984",
+  appId: "1:540869594984:web:667a69b95b6edd983ed0dd",
+  measurementId: "G-X9HQ1DN4P7"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+const tableBody = document.getElementById("contributionsBody");
+const memberNameDiv = document.getElementById("memberName");
+
+document.getElementById("pdfBtn").addEventListener("click", () => {
+  html2pdf().set({
+    margin: 0.5, filename: 'contribution.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  }).from(document.getElementById("pdfContent")).save();
+});
+
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  signOut(auth).then(() => window.location.href = "../member.html");
+});
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) { window.location.href = "../member.html"; return; }
+
+  const memberDoc = doc(db, "members", user.uid);
+  const snap = await getDoc(memberDoc);
+  if (!snap.exists()) { window.location.href = "../member.html"; return; }
+
+  const localName = localStorage.getItem("memberName");
+  if (!snap.data().name && localName) {
+    await setDoc(memberDoc, { name: localName }, { merge: true });
+  }
+
+  onSnapshot(memberDoc, (docSnap) => {
+    if (!docSnap.exists()) return;
+    const data = docSnap.data();
+    const contributions = data.contributions || [];
+    memberNameDiv.textContent = data.name || localStorage.getItem("memberName") || "";
+
+    tableBody.innerHTML = "";
+    let total = 0;
+    contributions.forEach((item, i) => {
+      const tr = document.createElement("tr");
+      tr.style.backgroundColor = i % 2 === 0 ? "#f8fafc" : "white";
+      tr.innerHTML = `<td>${item.month}</td><td>${item.amount}</td>`;
+      tableBody.appendChild(tr);
+      total += Number(item.amount) || 0;
+    });
+
+    const trTotal = document.createElement("tr");
+    trTotal.className = "total-row";
+    trTotal.innerHTML = `<td>মোট</td><td>${total}</td>`;
+    tableBody.appendChild(trTotal);
+  });
+});
+  </script>
+<script src="../js/common.js"></script>
+</body>
+</html>
