@@ -7,6 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   * { box-sizing: border-box; }
   body {
@@ -212,6 +214,14 @@
     .form-row { flex-direction: column; }
     .form-row select, .form-row input { width: 100%; }
   }
+
+  .pdf-section { margin-top: 32px; }
+  .pdf-section h2 { font-size: 1.4rem; font-weight: 700; margin: 0 0 16px; }
+
+  body.dark-mode #pdfContent h1,
+  body.dark-mode #pdfContent h2 {
+    color: #ffffff !important;
+  }
 </style>
 </head>
 <body>
@@ -277,6 +287,27 @@
   </div>
 
   <div id="kalamListAdmin"></div>
+
+  <hr style="margin:32px 0;border:none;border-top:2px solid #e2e8f0;">
+
+  <h2 style="margin:0 0 16px;">PDF তৈরি করুন</h2>
+
+  <div class="form-row">
+    <input type="text" id="pdfMonth" placeholder="মাস বা শিরোনাম (যেমন: নভেম্বর, ২০২৫ বা ঈদের হাদিয়া)">
+    <button class="btn-save" id="generatePdfBtn" style="background:#8b5cf6;">PDF তৈরি করুন</button>
+    <button class="btn-save" id="generatePngBtn" style="background:#3b82f6;">PNG তৈরি করুন</button>
+  </div>
+
+  <!-- Hidden PDF Template -->
+  <div id="pdfTemplate" style="position:absolute;left:-9999px;top:0;width:700px;">
+    <div id="pdfContent" style="background:#FFD700;padding:40px 36px;font-family:'Noto Sans Bengali',sans-serif;color:#1e40af;">
+      <h1 id="pdfTitle" style="text-align:center;font-size:1.6rem;font-weight:800;margin:0 0 8px;line-height:1.6;"></h1>
+      <h2 id="pdfSubtitle" style="text-align:center;font-size:1.3rem;font-weight:700;margin:0 0 32px;"></h2>
+      <div id="pdfList" style="font-size:1.15rem;line-height:2.4;"></div>
+      <div style="border-top:3px dashed #1e40af;margin:20px 0;"></div>
+      <div id="pdfTotal" style="font-size:1.3rem;font-weight:700;"></div>
+    </div>
+  </div>
 </main>
 
 <script type="module">
@@ -545,8 +576,175 @@ async function deleteKalam(id) {
   if (!confirm("⚠ আপনি কি নিশ্চিত? এই কালাম ডিলিট হবে!")) return;
   await deleteDoc(doc(db, "kalam", id));
   await loadKalamsAdmin();
-  alert("✅ কালাম ডিলিট হয়েছে!");
+  alert("✅ কালাম ডিলিট হয়েছে!");
 }
+
+// ---- PDF Generation ----
+const memberNicknames = {
+  "TswpmH1sN7fRpF6Yk7eolo7Ugds2": "শাহিন",
+  "wQSvWHi2QOWsqg7VxhvQp8Bq8zw1": "সৌরভ",
+  "FhS6Tb10XYeVjwv4rcfAEr7ZuV33": "সোহাগ",
+  "cHb9uvDq5hSAUuBVloG4NR3gPof1": "জিয়াবুল",
+  "5VdlbmtFCYeMH6jyDYJgjqTn1uC2": "মজিবুল",
+  "q1Dc1OeL95NDyRg4eFFVyl5BqbX2": "আমর",
+  "57Yysv0aWfhcNSC8awu1L1dzVTm2": "নাঈম",
+  "PaaeyQt3RfbrSI69NlKz9gilFy32": "টিপু ভাই",
+  "b7F4IOjC7GNofRfx15Qd0JmUFTH3": "মফিজ ভাই",
+  "lmP4QmU0FXQwZbKHcVvydj97TQu1": "রুমি ভাই",
+  "ftIftWaxlBhu1hP0a4N9OqElqB73": "শাকের ভাই",
+  "4ILmO5KmbUb38cySJnOM4001cEy1": "মাহবুব ভাই",
+  "bIHNGBaFHKaYd6TKlg4NwfUKcg13": "নেজাম ভাই"
+};
+
+function toBanglaNum(n) {
+  return String(n).replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+}
+
+function isMonthName(text) {
+  const months = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর','jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+  const lower = text.toLowerCase();
+  return months.some(m => lower.includes(m));
+}
+
+function getPdfTitle(month) {
+  if (isMonthName(month)) {
+    return { title: "হযরত আকবর শাহ বাবাজানের ব্যাংক একাউন্টের", subtitle: "মাসিক হাদিয়া (" + month + ")" };
+  }
+  return { title: month, subtitle: "এর হিসাব" };
+}
+
+document.getElementById("generatePdfBtn").addEventListener("click", async () => {
+  const month = document.getElementById("pdfMonth").value.trim();
+  if (!month) return alert("⚠ মাস লিখুন!");
+
+  const allMembers = Object.entries(memberNicknames);
+  const results = [];
+
+  for (const [uid, nickname] of allMembers) {
+    const snap = await getDoc(doc(db, "members", uid));
+    if (!snap.exists()) continue;
+    const contributions = snap.data().contributions || [];
+    const match = contributions.find(c => c.month.trim() === month);
+    if (match && match.amount > 0) {
+      results.push({ nickname, amount: match.amount });
+    }
+  }
+
+  if (results.length === 0) return alert("⚠ এই মাসে কোনো অবদান পাওয়া যায়নি!");
+
+  const total = results.reduce((sum, r) => sum + r.amount, 0);
+  const titleData = getPdfTitle(month);
+
+  document.getElementById("pdfTitle").textContent = titleData.title;
+  document.getElementById("pdfSubtitle").textContent = titleData.subtitle;
+
+  const element = document.getElementById("pdfContent");
+  const pdfTemplate = document.getElementById("pdfTemplate");
+  const bgColor = isMonthName(month) ? "#FFD700" : "#22c55e";
+  const txtColor = isMonthName(month) ? "#1e40af" : "#ffffff";
+
+  let listHTML = "";
+  results.forEach((r, i) => {
+    const num = toBanglaNum(i + 1);
+    const amt = toBanglaNum(r.amount);
+    listHTML += '<div style="display:flex;align-items:baseline;"><span style="font-weight:700;color:' + txtColor + ';">' + num + '. ' + r.nickname + '</span><span style="flex:1;border-bottom:2px dashed ' + txtColor + ';margin:0 8px;position:relative;top:-4px;"></span><span style="font-weight:600;color:' + txtColor + ';">' + amt + '/-</span></div>';
+  });
+  document.getElementById("pdfList").innerHTML = listHTML;
+  document.getElementById("pdfTotal").innerHTML = "মোট <span style=\"border-bottom:2px dashed " + txtColor + ";display:inline-block;width:60%;margin:0 12px;position:relative;top:-4px;\"></span> " + toBanglaNum(total) + "/-";
+
+  element.style.background = bgColor;
+  element.style.color = txtColor;
+  document.getElementById("pdfTitle").style.color = "#1e40af";
+  document.getElementById("pdfSubtitle").style.color = "#1e40af";
+  pdfTemplate.style.left = "0";
+  pdfTemplate.style.position = "relative";
+
+  html2canvas(element, { scale: 2, useCORS: true, backgroundColor: bgColor }).then(canvas => {
+    const imgData = canvas.toDataURL("image/png");
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF("p", "mm", "a4");
+    const pdfW = pdf.internal.pageSize.getWidth();
+    const pdfH = (canvas.height * pdfW) / canvas.width;
+    pdf.addImage(imgData, "PNG", 0, 0, pdfW, pdfH);
+    pdf.save("hadia_" + month + ".pdf");
+
+    pdfTemplate.style.left = "-9999px";
+    pdfTemplate.style.position = "absolute";
+    element.style.background = "#FFD700";
+    document.getElementById("pdfTitle").style.color = "#ffffff";
+    document.getElementById("pdfSubtitle").style.color = "#ffffff";
+  }).catch(err => {
+    console.error(err);
+    pdfTemplate.style.left = "-9999px";
+    pdfTemplate.style.position = "absolute";
+    alert("❌ PDF তৈরিতে সমস্যা হয়েছে!");
+  });
+});
+
+document.getElementById("generatePngBtn").addEventListener("click", async () => {
+  const month = document.getElementById("pdfMonth").value.trim();
+  if (!month) return alert("⚠ মাস লিখুন!");
+
+  const allMembers = Object.entries(memberNicknames);
+  const results = [];
+
+  for (const [uid, nickname] of allMembers) {
+    const snap = await getDoc(doc(db, "members", uid));
+    if (!snap.exists()) continue;
+    const contributions = snap.data().contributions || [];
+    const match = contributions.find(c => c.month.trim() === month);
+    if (match && match.amount > 0) {
+      results.push({ nickname, amount: match.amount });
+    }
+  }
+
+  if (results.length === 0) return alert("⚠ এই মাসে কোনো অবদান পাওয়া যায়নি!");
+
+  const total = results.reduce((sum, r) => sum + r.amount, 0);
+  const titleData = getPdfTitle(month);
+
+  document.getElementById("pdfTitle").textContent = titleData.title;
+  document.getElementById("pdfSubtitle").textContent = titleData.subtitle;
+
+  const element = document.getElementById("pdfContent");
+  const pdfTemplate = document.getElementById("pdfTemplate");
+  const bgColor = isMonthName(month) ? "#FFD700" : "#22c55e";
+  const txtColor = isMonthName(month) ? "#1e40af" : "#ffffff";
+
+  let listHTML = "";
+  results.forEach((r, i) => {
+    const num = toBanglaNum(i + 1);
+    const amt = toBanglaNum(r.amount);
+    listHTML += '<div style="display:flex;align-items:baseline;"><span style="font-weight:700;color:' + txtColor + ';">' + num + '. ' + r.nickname + '</span><span style="flex:1;border-bottom:2px dashed ' + txtColor + ';margin:0 8px;position:relative;top:-4px;"></span><span style="font-weight:600;color:' + txtColor + ';">' + amt + '/-</span></div>';
+  });
+  document.getElementById("pdfList").innerHTML = listHTML;
+  document.getElementById("pdfTotal").innerHTML = "মোট <span style=\"border-bottom:2px dashed " + txtColor + ";display:inline-block;width:60%;margin:0 12px;position:relative;top:-4px;\"></span> " + toBanglaNum(total) + "/-";
+
+  element.style.background = bgColor;
+  element.style.color = txtColor;
+  document.getElementById("pdfTitle").style.color = "#1e40af";
+  document.getElementById("pdfSubtitle").style.color = "#1e40af";
+  pdfTemplate.style.left = "0";
+  pdfTemplate.style.position = "relative";
+
+  html2canvas(element, { scale: 2, useCORS: true, backgroundColor: bgColor }).then(canvas => {
+    const link = document.createElement("a");
+    link.download = "hadia_" + month + ".png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+
+    pdfTemplate.style.left = "-9999px";
+    pdfTemplate.style.position = "absolute";
+    element.style.background = "#FFD700";
+    document.getElementById("pdfTitle").style.color = "#ffffff";
+    document.getElementById("pdfSubtitle").style.color = "#ffffff";
+  }).catch(err => {
+    console.error(err);
+    pdfTemplate.style.left = "-9999px";
+    pdfTemplate.style.position = "absolute";
+    alert("❌ PNG তৈরিতে সমস্যা হয়েছে!");
+  });
+});
   </script>
 <script src="js/common.js"></script>
 </body>
