@@ -82,6 +82,8 @@
     font-size: 0.95rem;
   }
   tr:last-child td { border-bottom: none; }
+  .row-even { background: #f8fafc; }
+  .row-odd { background: white; }
   .total-row td {
     font-weight: 700;
     background: #fef3c7;
@@ -100,7 +102,8 @@
     .table-wrap { background: #1e293b; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
     th { background: #334155; color: #e2e8f0; }
     td { color: #cbd5e1; border-bottom: 1px solid #334155; }
-    tr { background: #1e293b; }
+    .row-even { background: #1e293b; }
+    .row-odd { background: #0f172a; }
     .total-row td { background: #422006; color: #fbbf24; }
     #pdfContent h1 { color: #f1f5f9; }
   }
@@ -196,7 +199,7 @@ onAuthStateChanged(auth, async (user) => {
     let total = 0;
     contributions.forEach((item, i) => {
       const tr = document.createElement("tr");
-      tr.style.backgroundColor = i % 2 === 0 ? "#f8fafc" : "white";
+      tr.className = i % 2 === 0 ? "row-even" : "row-odd";
       tr.innerHTML = `<td>${item.month}</td><td>${item.amount}</td>`;
       tableBody.appendChild(tr);
       total += Number(item.amount) || 0;
