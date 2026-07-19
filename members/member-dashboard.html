@@ -92,6 +92,18 @@
     h1 { font-size: 1.5rem; }
     .toolbar { justify-content: center; }
   }
+
+  @media (prefers-color-scheme: dark) {
+    body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
+    h1 { color: #f1f5f9; }
+    #memberName, #pdfMemberName { color: #34d399; }
+    .table-wrap { background: #1e293b; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
+    th { background: #334155; color: #e2e8f0; }
+    td { color: #cbd5e1; border-bottom: 1px solid #334155; }
+    tr { background: #1e293b; }
+    .total-row td { background: #422006; color: #fbbf24; }
+    #pdfContent h1 { color: #f1f5f9; }
+  }
 </style>
 </head>
 <body>
