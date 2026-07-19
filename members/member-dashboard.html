@@ -95,18 +95,18 @@
     .toolbar { justify-content: center; }
   }
 
-  @media (prefers-color-scheme: dark) {
-    body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%); }
-    h1 { color: #f1f5f9; }
-    #memberName, #pdfMemberName { color: #34d399; }
-    .table-wrap { background: #1e293b; box-shadow: 0 4px 24px rgba(0,0,0,0.3); }
-    th { background: #334155; color: #e2e8f0; }
-    td { color: #cbd5e1; border-bottom: 1px solid #334155; }
-    .row-even { background: #1e293b; }
-    .row-odd { background: #0f172a; }
-    .total-row td { background: #422006; color: #fbbf24; }
-    #pdfContent h1 { color: #f1f5f9; }
+  body.dark-mode {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%) !important;
   }
+  body.dark-mode h1 { color: #f1f5f9 !important; }
+  body.dark-mode #memberName, body.dark-mode #pdfMemberName { color: #34d399 !important; }
+  body.dark-mode .table-wrap { background: #1e293b !important; box-shadow: 0 4px 24px rgba(0,0,0,0.3) !important; }
+  body.dark-mode table th { background: #334155 !important; color: #e2e8f0 !important; }
+  body.dark-mode table td { color: #cbd5e1 !important; border-bottom: 1px solid #334155 !important; }
+  body.dark-mode .row-even { background: #1e293b !important; }
+  body.dark-mode .row-odd { background: #0f172a !important; }
+  body.dark-mode .total-row td { background: #422006 !important; color: #fbbf24 !important; }
+  body.dark-mode #pdfContent h1 { color: #f1f5f9 !important; }
 </style>
 </head>
 <body>
