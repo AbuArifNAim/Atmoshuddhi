@@ -107,6 +107,8 @@
   </div>
 
   <div id="pdfContent">
+    <h1 style="text-align:center;font-size:1.8rem;font-weight:800;margin:0 0 4px;">আত্মশুদ্ধি</h1>
+    <p id="pdfMemberName" style="text-align:center;font-size:1.1rem;font-weight:600;color:#10b981;margin:0 0 16px;"></p>
     <div class="table-wrap">
       <table>
         <thead>
@@ -142,8 +144,13 @@ const tableBody = document.getElementById("contributionsBody");
 const memberNameDiv = document.getElementById("memberName");
 
 document.getElementById("pdfBtn").addEventListener("click", () => {
+  const memberName = document.getElementById("memberName").textContent || "Member";
+  const today = new Date();
+  const dateStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+  const filename = `Contribution ${memberName} ${dateStr}.pdf`;
+  
   html2pdf().set({
-    margin: 0.5, filename: 'contribution.pdf',
+    margin: 0.5, filename: filename,
     image: { type: 'jpeg', quality: 0.98 },
     html2canvas: { scale: 2 },
     jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
@@ -171,6 +178,7 @@ onAuthStateChanged(auth, async (user) => {
     const data = docSnap.data();
     const contributions = data.contributions || [];
     memberNameDiv.textContent = data.name || localStorage.getItem("memberName") || "";
+    document.getElementById("pdfMemberName").textContent = data.name || localStorage.getItem("memberName") || "";
 
     tableBody.innerHTML = "";
     let total = 0;
