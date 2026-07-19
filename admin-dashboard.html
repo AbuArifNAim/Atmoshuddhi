@@ -300,12 +300,12 @@
 
   <!-- Hidden PDF Template -->
   <div id="pdfTemplate" style="position:absolute;left:-9999px;top:0;width:700px;">
-    <div id="pdfContent" style="background:#FFD700;padding:40px 36px;font-family:'Noto Sans Bengali',sans-serif;color:#1e40af;">
-      <h1 id="pdfTitle" style="text-align:center;font-size:1.6rem;font-weight:800;margin:0 0 8px;line-height:1.6;"></h1>
-      <h2 id="pdfSubtitle" style="text-align:center;font-size:1.3rem;font-weight:700;margin:0 0 32px;"></h2>
-      <div id="pdfList" style="font-size:1.15rem;line-height:2.4;"></div>
+    <div id="pdfContent" style="background:#FFD700;padding:40px 36px;font-family:'sutonnymj',sans-serif;color:#1e40af;">
+      <h1 id="pdfTitle" style="text-align:center;font-size:2.2rem;font-weight:800;margin:0 0 8px;line-height:1.6;"></h1>
+      <h2 id="pdfSubtitle" style="text-align:center;font-size:1.9rem;font-weight:700;margin:0 0 32px;"></h2>
+      <div id="pdfList" style="font-size:1.75rem;line-height:2.4;"></div>
       <div style="border-top:3px dashed #1e40af;margin:20px 0;"></div>
-      <div id="pdfTotal" style="font-size:1.3rem;font-weight:700;"></div>
+      <div id="pdfTotal" style="font-size:1.9rem;font-weight:700;"></div>
     </div>
   </div>
 </main>
@@ -614,7 +614,7 @@ function getPdfTitle(month) {
 }
 
 document.getElementById("generatePdfBtn").addEventListener("click", async () => {
-  const month = document.getElementById("pdfMonth").value.trim();
+  const month = document.getElementById("pdfMonth").value.trim().replace(/['']/g, "'");
   if (!month) return alert("⚠ মাস লিখুন!");
 
   const allMembers = Object.entries(memberNicknames);
@@ -624,7 +624,10 @@ document.getElementById("generatePdfBtn").addEventListener("click", async () => 
     const snap = await getDoc(doc(db, "members", uid));
     if (!snap.exists()) continue;
     const contributions = snap.data().contributions || [];
-    const match = contributions.find(c => c.month.trim() === month);
+    const match = contributions.find(c => {
+      const stored = c.month.trim().replace(/['']/g, "'");
+      return stored.includes(month) || month.includes(stored);
+    });
     if (match && match.amount > 0) {
       results.push({ nickname, amount: match.amount });
     }
@@ -682,7 +685,7 @@ document.getElementById("generatePdfBtn").addEventListener("click", async () => 
 });
 
 document.getElementById("generatePngBtn").addEventListener("click", async () => {
-  const month = document.getElementById("pdfMonth").value.trim();
+  const month = document.getElementById("pdfMonth").value.trim().replace(/['']/g, "'");
   if (!month) return alert("⚠ মাস লিখুন!");
 
   const allMembers = Object.entries(memberNicknames);
@@ -692,7 +695,10 @@ document.getElementById("generatePngBtn").addEventListener("click", async () => 
     const snap = await getDoc(doc(db, "members", uid));
     if (!snap.exists()) continue;
     const contributions = snap.data().contributions || [];
-    const match = contributions.find(c => c.month.trim() === month);
+    const match = contributions.find(c => {
+      const stored = c.month.trim().replace(/['']/g, "'");
+      return stored.includes(month) || month.includes(stored);
+    });
     if (match && match.amount > 0) {
       results.push({ nickname, amount: match.amount });
     }
